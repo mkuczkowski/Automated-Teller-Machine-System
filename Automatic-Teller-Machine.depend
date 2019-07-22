@@ -1,0 +1,45 @@
+# depslib dependency file v1.0
+1563814314 source:c:\users\maciek\desktop\cpp-app\automatic-teller-machine\src\menu.cpp
+	"Menu.h"
+	<iostream>
+
+1563814321 c:\users\maciek\desktop\cpp-app\automatic-teller-machine\include\menu.h
+	"DisplayPanel.h"
+	"Option.h"
+
+1563814614 source:c:\users\maciek\desktop\cpp-app\automatic-teller-machine\main.cpp
+	<iostream>
+	<string>
+	"Option.h"
+	"Menu.h"
+
+1563812160 c:\users\maciek\desktop\cpp-app\automatic-teller-machine\include\option.h
+	<string>
+
+1563812199 source:c:\users\maciek\desktop\cpp-app\automatic-teller-machine\src\option.cpp
+	"Option.h"
+
+1563814342 c:\users\maciek\desktop\cpp-app\automatic-teller-machine\include\displaypanel.h
+
+1563814614 source:c:\users\maciek\desktop\cpp-app\automated-teller-machine-system\main.cpp
+	<iostream>
+	<string>
+	"Option.h"
+	"Menu.h"
+
+1563812160 c:\users\maciek\desktop\cpp-app\automated-teller-machine-system\include\option.h
+	<string>
+
+1563814321 c:\users\maciek\desktop\cpp-app\automated-teller-machine-system\include\menu.h
+	"DisplayPanel.h"
+	"Option.h"
+
+1563814342 c:\users\maciek\desktop\cpp-app\automated-teller-machine-system\include\displaypanel.h
+
+1563814623 source:c:\users\maciek\desktop\cpp-app\automated-teller-machine-system\src\menu.cpp
+	"Menu.h"
+	<iostream>
+
+1563812199 source:c:\users\maciek\desktop\cpp-app\automated-teller-machine-system\src\option.cpp
+	"Option.h"
+
