@@ -1,5 +1,7 @@
 #include "Menu.h"
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 Menu::Menu() {
     options[0].assignOption("1. Cash withdrawal\n");
@@ -10,7 +12,7 @@ Menu::Menu() {
 
 Menu::~Menu() {}
 
-void Menu::display() {
+void Menu::showTransactions() {
     std::cout << "*** Automated-Teller-Machine ***\n";
     std::cout << "Select transaction: \n\n";
     for(Option &option : this->options)
@@ -19,4 +21,31 @@ void Menu::display() {
 
 Option* Menu::getOptions() {
     return this->options;
+}
+
+void Menu::showHomeScreen() {
+    std::cout << "*** Automated-Teller-Machine ***\n";
+    std::cout << "Please insert credit/debit card\n";
+    std::cout << "\n1. Insert (card.json)\n";
+    std::cout << "\n9. Exit\n";
+    int choice;
+    while(choice != 1 || choice != 9) {
+        std::cin >>  choice;
+        switch(choice) {
+        case 1:
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            this->manager.loadCard();
+            std::cout << "Loading...";
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            system("cls");
+            this->showTransactions();
+            return;
+        case 9:
+            exit(0);
+            break;
+        default:
+            std::cout << "Incorrect option! Please try again:\n";
+            break;
+        }
+    }
 }

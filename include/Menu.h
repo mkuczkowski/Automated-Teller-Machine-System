@@ -1,20 +1,20 @@
 #ifndef MENU_H
 #define MENU_H
-#include "DisplayPanel.h"
 #include "Option.h"
+#include "DataManager.h"
 
 #define OPTIONS_LENGTH 4
 
-class Menu : public DisplayPanel {
+class Menu {
     public:
         Menu();
         virtual ~Menu();
-        virtual void display();
+        void showHomeScreen();
         Option* getOptions();
-    protected:
-
     private:
         Option options[OPTIONS_LENGTH];
+        void showTransactions();
+        DataManager manager;
 };
 
 #endif // MENU_H

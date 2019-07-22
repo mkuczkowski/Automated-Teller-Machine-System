@@ -8,16 +8,13 @@ class Option {
         Option(std::string);
         virtual ~Option();
         std::string getInformation();
-        uint8_t getChoiceValue();
+        int getChoiceValue();
         void setInformation(std::string);
-        void setChoiceValue(uint8_t);
+        void setChoiceValue(int);
         void assignOption(std::string);
-
-    protected:
-
     private:
         std::string information;
-        uint8_t choiceValue;
+        int choiceValue;
 };
 
 #endif // OPTION_H

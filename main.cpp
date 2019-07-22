@@ -4,10 +4,8 @@
 #include "Menu.h"
 
 int main() {
-
     Menu* menu = new Menu();
-    menu->display();
-
+    menu->showHomeScreen();
 
     return 0;
 }
