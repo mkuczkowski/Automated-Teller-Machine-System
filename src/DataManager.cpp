@@ -2,6 +2,7 @@
 #include <fstream>
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 
 DataManager::DataManager() {
     std::ifstream card("card.json");
@@ -65,4 +66,28 @@ double DataManager::getBalanceInquiry() {
 
 void DataManager::withdrawMoney() {
     double availableMoney = this->getBalanceInquiry();
+    double amount;
+    std::cout << "Type how much money You want to withdraw: ";
+    std::cin >> amount;
+    if(availableMoney - amount >= 0) {
+        this->updateMoneyDetails(availableMoney - amount);
+        std::cout << "\nTransaction completed successfully! Thank You for using our service\n";
+    } else {
+        std::cout << "Not enough money on Your account to do that!\n";
+    }
+    exit(0);
+}
+
+void DataManager::updateMoneyDetails(double valueToUpdate) {
+    for (auto &detail : this->moneyDetails) {
+        std::string number = detail.substr(0,19);
+        if(number.compare(this->insertedCard.number) == 0) {
+            detail.replace(23, detail.length() - 23, std::to_string(valueToUpdate));
+            std::cout << detail;
+        }
+    }
+    remove("money-details.txt");
+    std::ofstream updatedFile("money-details.txt");
+    std::ostream_iterator<std::string> fileIterator(updatedFile, "\n");
+    std::copy(this->moneyDetails.begin(), this->moneyDetails.end(), fileIterator);
 }

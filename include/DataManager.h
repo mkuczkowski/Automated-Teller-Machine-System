@@ -20,6 +20,7 @@ class DataManager {
         Card insertedCard;
         Card validCards[VALIDATED_CARDS_LENGTH];
         void setMoneyDetails();
+        void updateMoneyDetails(double);
 };
 
 
