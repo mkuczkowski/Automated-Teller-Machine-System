@@ -34,10 +34,12 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="include/DisplayPanel.h" />
+		<Unit filename="include/Card.h" />
+		<Unit filename="include/DataManager.h" />
 		<Unit filename="include/Menu.h" />
 		<Unit filename="include/Option.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/DataManager.cpp" />
 		<Unit filename="src/Menu.cpp" />
 		<Unit filename="src/Option.cpp" />
 		<Extensions>

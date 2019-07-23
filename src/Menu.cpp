@@ -4,10 +4,10 @@
 #include <thread>
 
 Menu::Menu() {
-    options[0].assignOption("1. Cash withdrawal\n");
-    options[1].assignOption("2. Deposit\n");
-    options[2].assignOption("3. Balance Inquiry\n");
-    options[3].assignOption("\n9. Exit\n");
+    this->options[0].assignOption("1. Cash withdrawal\n");
+    this->options[1].assignOption("2. Deposit\n");
+    this->options[2].assignOption("3. Balance Inquiry\n");
+    this->options[3].assignOption("\n9. Exit\n");
 }
 
 Menu::~Menu() {}
@@ -38,7 +38,7 @@ void Menu::showHomeScreen() {
             std::cout << "Loading...";
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             system("cls");
-            this->showTransactions();
+            this->manager.isCardValid() ? this->showTransactions() : exit(0);
             return;
         case 9:
             exit(0);
