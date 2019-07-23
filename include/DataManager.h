@@ -12,12 +12,14 @@ class DataManager {
         void loadCard();
         Card getInsertedCard();
         bool isCardValid();
-
+        std::vector<std::string> moneyDetails;
+        void withdrawMoney();
+        double getBalanceInquiry();
     private:
         nlohmann::json currentCardData;
         Card insertedCard;
         Card validCards[VALIDATED_CARDS_LENGTH];
-
+        void setMoneyDetails();
 };
 
 

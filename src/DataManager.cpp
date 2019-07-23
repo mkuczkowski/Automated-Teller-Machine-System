@@ -14,6 +14,7 @@ DataManager::DataManager() {
         this->validCards[i].cvc = availableCards[i]["CVC"];
         this->validCards[i].pin = availableCards[i]["PIN"];
     }
+    setMoneyDetails();
 }
 
 DataManager::~DataManager() {}
@@ -39,4 +40,29 @@ bool DataManager::isCardValid() {
         std::cout << "INVALID CARD!\n";
         return false;
     }
+}
+
+void DataManager::setMoneyDetails() {
+    std::ifstream file("money-details.txt");
+    std::string line;
+    if (file.is_open()) {
+        while(getline(file,line))
+            this->moneyDetails.push_back(line);
+    }
+    file.close();
+}
+
+double DataManager::getBalanceInquiry() {
+    for (auto &detail : this->moneyDetails) {
+        std::string number = detail.substr(0,19);
+        if(number.compare(this->insertedCard.number) == 0) {
+            std::string money = detail.substr(23, detail.length() - 23);
+            return ::atof(money.c_str());
+        }
+    }
+    return 0.0;
+}
+
+void DataManager::withdrawMoney() {
+    double availableMoney = this->getBalanceInquiry();
 }

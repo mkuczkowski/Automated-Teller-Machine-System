@@ -17,6 +17,26 @@ void Menu::showTransactions() {
     std::cout << "Select transaction: \n\n";
     for(Option &option : this->options)
         std::cout << option.getInformation();
+
+    int choice;
+    while(choice != 1 || choice != 2 || choice != 3 || choice != 9) {
+        std::cin >> choice;
+        switch(choice) {
+            case 1:
+                std::cout << "You've got " << this->manager.getBalanceInquiry() << " PLN on Your account\n";
+                this->manager.withdrawMoney();
+                break;
+            case 2:
+                break;
+            case 3:
+                std::cout << "You've got " << this->manager.getBalanceInquiry() << " PLN on Your account\n";
+                std::cout << "Printing receipt...\n";
+                std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+                std::cout << "Thank You for using our service\n";
+                exit(0);
+                break;
+        }
+    }
 }
 
 Option* Menu::getOptions() {
