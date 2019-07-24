@@ -19,7 +19,12 @@ DataManager::DataManager() {
     setMoneyDetails();
 }
 
-DataManager::~DataManager() {}
+DataManager::~DataManager() {
+    this->insertedCard.number.clear();
+    this->insertedCard.cvc.clear();
+    this->insertedCard.pin.clear();
+    this->currentCardData = nullptr;
+}
 
 void DataManager::loadCard() {
     this->insertedCard.number = this->currentCardData["number"].get<std::string>();
@@ -54,7 +59,7 @@ void DataManager::setMoneyDetails() {
     file.close();
 }
 
-double DataManager::getBalanceInquiry() {
+double DataManager::getBalanceInquiry() const {
     for (auto &detail : this->moneyDetails) {
         std::string number = detail.substr(0,19);
         if(number.compare(this->insertedCard.number) == 0) {
@@ -66,13 +71,14 @@ double DataManager::getBalanceInquiry() {
 }
 
 void DataManager::withdrawMoney() {
-    double availableMoney = this->getBalanceInquiry();
+    auto availableMoney = this->getBalanceInquiry();
     double amount;
     std::cout << "Type how much money You want to withdraw: ";
     std::cin >> amount;
     if(availableMoney - amount >= 0) {
         this->updateMoneyDetails(availableMoney - amount);
         std::cout << "\nTransaction completed successfully! Thank You for using our service\n";
+        this->createReceipt(availableMoney, availableMoney - amount);
     } else {
         std::cout << "Not enough money on Your account to do that!\n";
     }
@@ -80,13 +86,13 @@ void DataManager::withdrawMoney() {
 }
 
 void DataManager::depositMoney() {
-    double currentAmount = this->getBalanceInquiry();
+    auto currentAmount = this->getBalanceInquiry();
     double amountToDeposit;
     std::cout << "Type how much money You want to deposit: ";
     std::cin >> amountToDeposit;
     this->updateMoneyDetails(amountToDeposit + currentAmount);
     std::cout << "\nMoney has been transfered to your account\n";
-    this->createReceipt();
+    this->createReceipt(currentAmount, amountToDeposit + currentAmount);
     exit(0);
 }
 
@@ -115,7 +121,7 @@ std::string DataManager::getCurrentDateTime(bool isFileName) const {
     return buffer;
 }
 
-void DataManager::createReceipt() {
+void DataManager::createReceipt(double balanceBefore, double balanceAfter) {
     std::string fileName = "Receipt ";
     fileName.append(this->getCurrentDateTime(true));
     fileName.erase(std::remove(fileName.begin(), fileName.end(), ':'), fileName.end());
@@ -125,7 +131,10 @@ void DataManager::createReceipt() {
     if(!receipt.is_open()) {
         std::cerr << "Cannot create receipt: " << strerror(errno);
     } else {
-        receipt << "Transaction date: " << this->getCurrentDateTime(false);
+        receipt << "Transaction date: " << this->getCurrentDateTime(false) << std::endl;
+        receipt << "Account no. : " << this->insertedCard.number << std::endl;
+        receipt << "Balance before transaction: " << std::to_string(balanceBefore) << std::endl;
+        receipt << "Current account balance: " << std::to_string(balanceAfter) << std::endl;
         std::cout << "Receipt created: " << fileName << std::endl;
     }
     receipt.close();

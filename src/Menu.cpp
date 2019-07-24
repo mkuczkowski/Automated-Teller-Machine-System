@@ -31,10 +31,15 @@ void Menu::showTransactions() {
                 break;
             case 3:
                 std::cout << "You've got " << this->manager.getBalanceInquiry() << " PLN on Your account\n";
-                std::cout << "Printing receipt...\n";
                 std::this_thread::sleep_for(std::chrono::milliseconds(1500));
                 std::cout << "Thank You for using our service\n";
                 exit(0);
+                break;
+            case 9:
+                std::cout << "Thank You for using our service\n";
+                exit(0);
+            default:
+                std::cout << "Incorrect option!\n";
                 break;
         }
     }

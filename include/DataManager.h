@@ -12,11 +12,9 @@ class DataManager {
         void loadCard();
         Card getInsertedCard();
         bool isCardValid();
-        std::vector<std::string> moneyDetails;
         void withdrawMoney();
         void depositMoney();
-        void createReceipt();
-        double getBalanceInquiry();
+        double getBalanceInquiry() const;
     private:
         nlohmann::json currentCardData;
         Card insertedCard;
@@ -24,6 +22,8 @@ class DataManager {
         void setMoneyDetails();
         void updateMoneyDetails(double);
         std::string getCurrentDateTime(bool) const;
+        void createReceipt(double, double);
+        std::vector<std::string> moneyDetails;
 };
 
 
