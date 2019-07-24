@@ -14,6 +14,8 @@ class DataManager {
         bool isCardValid();
         std::vector<std::string> moneyDetails;
         void withdrawMoney();
+        void depositMoney();
+        void createReceipt();
         double getBalanceInquiry();
     private:
         nlohmann::json currentCardData;
@@ -21,6 +23,7 @@ class DataManager {
         Card validCards[VALIDATED_CARDS_LENGTH];
         void setMoneyDetails();
         void updateMoneyDetails(double);
+        std::string getCurrentDateTime(bool) const;
 };
 
 

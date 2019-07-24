@@ -27,6 +27,7 @@ void Menu::showTransactions() {
                 this->manager.withdrawMoney();
                 break;
             case 2:
+                this->manager.depositMoney();
                 break;
             case 3:
                 std::cout << "You've got " << this->manager.getBalanceInquiry() << " PLN on Your account\n";

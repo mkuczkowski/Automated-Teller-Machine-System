@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <iterator>
+#include <time.h>
 
 DataManager::DataManager() {
     std::ifstream card("card.json");
@@ -78,6 +79,17 @@ void DataManager::withdrawMoney() {
     exit(0);
 }
 
+void DataManager::depositMoney() {
+    double currentAmount = this->getBalanceInquiry();
+    double amountToDeposit;
+    std::cout << "Type how much money You want to deposit: ";
+    std::cin >> amountToDeposit;
+    this->updateMoneyDetails(amountToDeposit + currentAmount);
+    std::cout << "\nMoney has been transfered to your account\n";
+    this->createReceipt();
+    exit(0);
+}
+
 void DataManager::updateMoneyDetails(double valueToUpdate) {
     for (auto &detail : this->moneyDetails) {
         std::string number = detail.substr(0,19);
@@ -90,4 +102,31 @@ void DataManager::updateMoneyDetails(double valueToUpdate) {
     std::ofstream updatedFile("money-details.txt");
     std::ostream_iterator<std::string> fileIterator(updatedFile, "\n");
     std::copy(this->moneyDetails.begin(), this->moneyDetails.end(), fileIterator);
+    updatedFile.close();
+}
+
+std::string DataManager::getCurrentDateTime(bool isFileName) const {
+    time_t now = time(0);
+    struct tm tstruct;
+    char buffer[80];
+    tstruct = *localtime(&now);
+    std::string format = isFileName ? "%Y%m%d%X" : "%Y-%m-%d %X";
+    strftime(buffer, sizeof(buffer), format.c_str(), &tstruct);
+    return buffer;
+}
+
+void DataManager::createReceipt() {
+    std::string fileName = "Receipt ";
+    fileName.append(this->getCurrentDateTime(true));
+    fileName.erase(std::remove(fileName.begin(), fileName.end(), ':'), fileName.end());
+    fileName.append(".txt");
+    std::ofstream receipt;
+    receipt.open(fileName.c_str(),  std::ios::app);
+    if(!receipt.is_open()) {
+        std::cerr << "Cannot create receipt: " << strerror(errno);
+    } else {
+        receipt << "Transaction date: " << this->getCurrentDateTime(false);
+        std::cout << "Receipt created: " << fileName << std::endl;
+    }
+    receipt.close();
 }
