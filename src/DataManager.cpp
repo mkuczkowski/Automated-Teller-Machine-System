@@ -7,9 +7,9 @@
 #include <sstream>
 
 DataManager::DataManager() {
-    std::ifstream card("card.json");
+    std::ifstream card("./data/card.json");
     card >> this->currentCardData;
-    std::ifstream cards("valid-cards.json");
+    std::ifstream cards("./data/valid-cards.json");
     nlohmann::json availableCards;
     cards >> availableCards;
     for(int i = 0; i < VALIDATED_CARDS_LENGTH; i++) {
@@ -54,7 +54,7 @@ bool DataManager::isCardValid() {
 }
 
 void DataManager::setMoneyDetails() {
-    std::ifstream file("money-details.txt");
+    std::ifstream file("./data/money-details.txt");
     std::string line;
     if(file.is_open()) {
         while(getline(file,line))
@@ -118,8 +118,8 @@ void DataManager::updateMoneyDetails(double valueToUpdate, std::string accountTo
             std::cout << detail;
         }
     }
-    remove("money-details.txt");
-    std::ofstream updatedFile("money-details.txt");
+    remove("./data/money-details.txt");
+    std::ofstream updatedFile("./data/money-details.txt");
     std::ostream_iterator<std::string> fileIterator(updatedFile, "\n");
     std::copy(this->moneyDetails.begin(), this->moneyDetails.end(), fileIterator);
     updatedFile.close();
