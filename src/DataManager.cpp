@@ -16,7 +16,10 @@ DataManager::DataManager() {
         this->validCards[i].cvc = availableCards[i]["CVC"];
         this->validCards[i].pin = availableCards[i]["PIN"];
     }
-    setMoneyDetails();
+    this->setMoneyDetails();
+    int availableBills[] = {500, 200, 100, 50, 20, 10};
+    for(int i = 0; i < AVAILABLE_BILLS_LENGTH; i++)
+        this->bills[i] = availableBills[i];
 }
 
 DataManager::~DataManager() {
@@ -52,7 +55,7 @@ bool DataManager::isCardValid() {
 void DataManager::setMoneyDetails() {
     std::ifstream file("money-details.txt");
     std::string line;
-    if (file.is_open()) {
+    if(file.is_open()) {
         while(getline(file,line))
             this->moneyDetails.push_back(line);
     }
@@ -60,7 +63,7 @@ void DataManager::setMoneyDetails() {
 }
 
 double DataManager::getBalanceInquiry() const {
-    for (auto &detail : this->moneyDetails) {
+    for(auto &detail : this->moneyDetails) {
         std::string number = detail.substr(0,19);
         if(number.compare(this->insertedCard.number) == 0) {
             std::string money = detail.substr(23, detail.length() - 23);
@@ -72,13 +75,22 @@ double DataManager::getBalanceInquiry() const {
 
 void DataManager::withdrawMoney() {
     auto availableMoney = this->getBalanceInquiry();
-    double amount;
+    int amount;
     std::cout << "Type how much money You want to withdraw: ";
     std::cin >> amount;
+    while(amount % 10 != 0) {
+        std::cout << "Incorrect amount! Available bills in ATM: : ";
+        for(auto &bill : this->bills)
+            std::cout << bill << " ";
+
+        std::cout << "\nPlease type a correct amount: ";
+        std::cin >> amount;
+    }
     if(availableMoney - amount >= 0) {
-        this->updateMoneyDetails(availableMoney - amount);
+        this->updateMoneyDetails(double(availableMoney - amount));
+        std::cout << "\nBills printed: " << this->getMinNumberOfBills(amount);
         std::cout << "\nTransaction completed successfully! Thank You for using our service\n";
-        this->createReceipt(availableMoney, availableMoney - amount);
+        this->createReceipt(availableMoney, double (availableMoney - amount));
     } else {
         std::cout << "Not enough money on Your account to do that!\n";
     }
@@ -97,7 +109,7 @@ void DataManager::depositMoney() {
 }
 
 void DataManager::updateMoneyDetails(double valueToUpdate) {
-    for (auto &detail : this->moneyDetails) {
+    for(auto &detail : this->moneyDetails) {
         std::string number = detail.substr(0,19);
         if(number.compare(this->insertedCard.number) == 0) {
             detail.replace(23, detail.length() - 23, std::to_string(valueToUpdate));
@@ -127,7 +139,7 @@ void DataManager::createReceipt(double balanceBefore, double balanceAfter) {
     fileName.erase(std::remove(fileName.begin(), fileName.end(), ':'), fileName.end());
     fileName.append(".txt");
     std::ofstream receipt;
-    receipt.open(fileName.c_str(),  std::ios::app);
+    receipt.open(fileName.c_str(), std::ios::app);
     if(!receipt.is_open()) {
         std::cerr << "Cannot create receipt: " << strerror(errno);
     } else {
@@ -138,4 +150,17 @@ void DataManager::createReceipt(double balanceBefore, double balanceAfter) {
         std::cout << "Receipt created: " << fileName << std::endl;
     }
     receipt.close();
+}
+
+int DataManager::getMinNumberOfBills(int requiredMoney) {
+    if(requiredMoney == 0) return 0;
+    int result = INT_MAX;
+    for(auto &bill : this->bills) {
+        if(bill <= requiredMoney) {
+            int subResult = getMinNumberOfBills(requiredMoney - bill);
+            if(subResult != INT_MAX && subResult + 1 < result)
+                result = subResult + 1;
+        }
+    }
+    return result;
 }

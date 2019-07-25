@@ -4,6 +4,7 @@
 #include "Card.h"
 
 #define VALIDATED_CARDS_LENGTH 3
+#define AVAILABLE_BILLS_LENGTH 6
 
 class DataManager {
     public:
@@ -24,6 +25,8 @@ class DataManager {
         std::string getCurrentDateTime(bool) const;
         void createReceipt(double, double);
         std::vector<std::string> moneyDetails;
+        int getMinNumberOfBills(int);
+        int bills[AVAILABLE_BILLS_LENGTH];
 };
 
 
