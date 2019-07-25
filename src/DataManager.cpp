@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iterator>
 #include <time.h>
+#include <sstream>
 
 DataManager::DataManager() {
     std::ifstream card("card.json");
@@ -87,7 +88,7 @@ void DataManager::withdrawMoney() {
         std::cin >> amount;
     }
     if(availableMoney - amount >= 0) {
-        this->updateMoneyDetails(double(availableMoney - amount));
+        this->updateMoneyDetails(double(-amount), this->insertedCard.number);
         std::cout << "\nBills printed: " << this->getMinNumberOfBills(amount);
         std::cout << "\nTransaction completed successfully! Thank You for using our service\n";
         this->createReceipt(availableMoney, double (availableMoney - amount));
@@ -102,17 +103,18 @@ void DataManager::depositMoney() {
     double amountToDeposit;
     std::cout << "Type how much money You want to deposit: ";
     std::cin >> amountToDeposit;
-    this->updateMoneyDetails(amountToDeposit + currentAmount);
+    this->updateMoneyDetails(amountToDeposit, this->insertedCard.number);
     std::cout << "\nMoney has been transfered to your account\n";
     this->createReceipt(currentAmount, amountToDeposit + currentAmount);
     exit(0);
 }
 
-void DataManager::updateMoneyDetails(double valueToUpdate) {
+void DataManager::updateMoneyDetails(double valueToUpdate, std::string accountToUpdate) {
     for(auto &detail : this->moneyDetails) {
         std::string number = detail.substr(0,19);
-        if(number.compare(this->insertedCard.number) == 0) {
-            detail.replace(23, detail.length() - 23, std::to_string(valueToUpdate));
+        if(number.compare(accountToUpdate) == 0) {
+            double amountBeforeTransaction = atof(detail.substr(23, detail.length() - 23).c_str());
+            detail.replace(23, detail.length() - 23, std::to_string(amountBeforeTransaction + valueToUpdate));
             std::cout << detail;
         }
     }
@@ -163,4 +165,44 @@ int DataManager::getMinNumberOfBills(int requiredMoney) {
         }
     }
     return result;
+}
+
+void DataManager::transferMoney() {
+    std::cout << "How much money you want to transfer? PLN: ";
+    double amountToTransfer;
+    std::cin >> amountToTransfer;
+    std::cout << "Type a valid (NO SPACES) 16-digit recipient's account (card) number: ";
+    std::string recipientNumber;
+    std::cin >> recipientNumber;
+    if(this->isAccountCorrect(recipientNumber)) {
+        this->updateMoneyDetails(amountToTransfer, this->convertAccountNumber(recipientNumber));
+        this->updateMoneyDetails(-amountToTransfer, this->insertedCard.number);
+        std::cout << "\nMoney has been transfered to account no. " << this->convertAccountNumber(recipientNumber) << std::endl;
+        this->createReceipt(this->getBalanceInquiry(), this->getBalanceInquiry() - amountToTransfer);
+    } else {
+        std::cout << "Incorrect account number!\n";
+    }
+    exit(0);
+}
+
+bool DataManager::isAccountCorrect(std::string accountToValidate) {
+    if(accountToValidate.length() != 16) return false;
+    for(auto &detail : this->moneyDetails) {
+        auto number = detail.substr(0,19);
+        number.erase(remove_if(number.begin(), number.end(), isspace), number.end());
+        if(number.compare(accountToValidate) == 0)
+            return true;
+    }
+    return false;
+}
+
+std::string DataManager::convertAccountNumber(const std::string& numberToConvert) {
+   std::stringstream convertedNumber;
+   for(int i = 0; (unsigned)i < numberToConvert.size(); i+=4) {
+        for(int j = i; j < i+4; j++)
+            convertedNumber << numberToConvert[j];
+        convertedNumber << ' ';
+   }
+   std::string result = convertedNumber.str();
+   return result.substr(0, result.size()-1);
 }

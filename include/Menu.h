@@ -3,7 +3,7 @@
 #include "Option.h"
 #include "DataManager.h"
 
-#define OPTIONS_LENGTH 4
+#define OPTIONS_LENGTH 5
 
 class Menu {
     public:
@@ -15,6 +15,7 @@ class Menu {
         Option options[OPTIONS_LENGTH];
         void showTransactions();
         DataManager manager;
+        bool isChoiceValid(int);
 };
 
 #endif // MENU_H

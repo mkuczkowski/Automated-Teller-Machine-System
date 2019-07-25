@@ -7,10 +7,19 @@ Menu::Menu() {
     this->options[0].assignOption("1. Cash withdrawal\n");
     this->options[1].assignOption("2. Deposit\n");
     this->options[2].assignOption("3. Balance Inquiry\n");
-    this->options[3].assignOption("\n9. Exit\n");
+    this->options[3].assignOption("4. Money transfer\n");
+    this->options[4].assignOption("\n9. Exit\n");
 }
 
 Menu::~Menu() {}
+
+bool Menu::isChoiceValid(int choice) {
+    for(auto &option : this->options) {
+        if(option.getChoiceValue() == choice)
+            return true;
+    }
+    return false;
+}
 
 void Menu::showTransactions() {
     std::cout << "*** Automated-Teller-Machine ***\n";
@@ -19,7 +28,7 @@ void Menu::showTransactions() {
         std::cout << option.getInformation();
 
     int choice;
-    while(choice != 1 || choice != 2 || choice != 3 || choice != 9) {
+    while(!isChoiceValid(choice)) {
         std::cin >> choice;
         switch(choice) {
             case 1:
@@ -35,11 +44,15 @@ void Menu::showTransactions() {
                 std::cout << "Thank You for using our service\n";
                 exit(0);
                 break;
+            case 4:
+                this->manager.transferMoney();
+                break;
             case 9:
                 std::cout << "Thank You for using our service\n";
                 exit(0);
             default:
                 std::cout << "Incorrect option!\n";
+                std::cout << "Select a correct transaction: ";
                 break;
         }
     }
