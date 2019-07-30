@@ -28,12 +28,14 @@ DataManager::~DataManager() {
     this->insertedCard.cvc.clear();
     this->insertedCard.pin.clear();
     this->currentCardData = nullptr;
+    this->encryptedCardNumber.clear();
 }
 
 void DataManager::loadCard() {
     this->insertedCard.number = this->currentCardData["number"].get<std::string>();
     this->insertedCard.cvc = this->currentCardData["CVC"].get<std::string>();
     this->insertedCard.pin = this->currentCardData["PIN"].get<std::string>();
+    this->encryptedCardNumber = std::to_string(this->encryptor(this->insertedCard.number));
 }
 
 Card DataManager::getInsertedCard() {
@@ -65,9 +67,11 @@ void DataManager::setMoneyDetails() {
 
 double DataManager::getBalanceInquiry() const {
     for(auto &detail : this->moneyDetails) {
-        std::string number = detail.substr(0,19);
-        if(number.compare(this->insertedCard.number) == 0) {
-            std::string money = detail.substr(23, detail.length() - 23);
+        auto hashLength = this->encryptedCardNumber.length();
+        std::string number = detail.substr(0, hashLength);
+        if(number.compare(this->encryptedCardNumber) == 0) {
+            auto moneyIndex = hashLength + 4;
+            std::string money = detail.substr(moneyIndex, detail.length() - moneyIndex);
             return ::atof(money.c_str());
         }
     }
@@ -88,7 +92,7 @@ void DataManager::withdrawMoney() {
         std::cin >> amount;
     }
     if(availableMoney - amount >= 0) {
-        this->updateMoneyDetails(double(-amount), this->insertedCard.number);
+        this->updateMoneyDetails(double(-amount), this->encryptedCardNumber);
         std::cout << "\nBills printed: " << this->getMinNumberOfBills(amount);
         std::cout << "\nTransaction completed successfully! Thank You for using our service\n";
         this->createReceipt(availableMoney, double (availableMoney - amount));
@@ -103,7 +107,7 @@ void DataManager::depositMoney() {
     double amountToDeposit;
     std::cout << "Type how much money You want to deposit: ";
     std::cin >> amountToDeposit;
-    this->updateMoneyDetails(amountToDeposit, this->insertedCard.number);
+    this->updateMoneyDetails(amountToDeposit, this->encryptedCardNumber);
     std::cout << "\nMoney has been transfered to your account\n";
     this->createReceipt(currentAmount, amountToDeposit + currentAmount);
     exit(0);
@@ -111,11 +115,12 @@ void DataManager::depositMoney() {
 
 void DataManager::updateMoneyDetails(double valueToUpdate, std::string accountToUpdate) {
     for(auto &detail : this->moneyDetails) {
-        std::string number = detail.substr(0,19);
+        auto hashLength = accountToUpdate.length();
+        std::string number = detail.substr(0, hashLength);
         if(number.compare(accountToUpdate) == 0) {
-            double amountBeforeTransaction = atof(detail.substr(23, detail.length() - 23).c_str());
-            detail.replace(23, detail.length() - 23, std::to_string(amountBeforeTransaction + valueToUpdate));
-            std::cout << detail;
+            auto moneyIndex = hashLength + 4;
+            double amountBeforeTransaction = atof(detail.substr(moneyIndex, detail.length() - moneyIndex).c_str());
+            detail.replace(moneyIndex, detail.length() - moneyIndex, std::to_string(amountBeforeTransaction + valueToUpdate));
         }
     }
     remove("./data/money-details.txt");
@@ -174,9 +179,10 @@ void DataManager::transferMoney() {
     std::cout << "Type a valid (NO SPACES) 16-digit recipient's account (card) number: ";
     std::string recipientNumber;
     std::cin >> recipientNumber;
-    if(this->isAccountCorrect(recipientNumber)) {
-        this->updateMoneyDetails(amountToTransfer, this->convertAccountNumber(recipientNumber));
-        this->updateMoneyDetails(-amountToTransfer, this->insertedCard.number);
+    auto encryptedAccountNumber = std::to_string(encryptor(this->convertAccountNumber(recipientNumber)));
+    if(this->isAccountCorrect(encryptedAccountNumber)) {
+        this->updateMoneyDetails(amountToTransfer, encryptedAccountNumber);
+        this->updateMoneyDetails(-amountToTransfer, this->encryptedCardNumber);
         std::cout << "\nMoney has been transfered to account no. " << this->convertAccountNumber(recipientNumber) << std::endl;
         this->createReceipt(this->getBalanceInquiry(), this->getBalanceInquiry() - amountToTransfer);
     } else {
@@ -186,10 +192,9 @@ void DataManager::transferMoney() {
 }
 
 bool DataManager::isAccountCorrect(std::string accountToValidate) {
-    if(accountToValidate.length() != 16) return false;
     for(auto &detail : this->moneyDetails) {
-        auto number = detail.substr(0,19);
-        number.erase(remove_if(number.begin(), number.end(), isspace), number.end());
+        auto hashLength = accountToValidate.length();
+        std::string number = detail.substr(0, hashLength);
         if(number.compare(accountToValidate) == 0)
             return true;
     }

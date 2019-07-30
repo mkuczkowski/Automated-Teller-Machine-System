@@ -2,6 +2,7 @@
 #define DATAMANAGER_H
 #include <nlohmann/json.hpp>
 #include "Card.h"
+#include <functional>
 
 #define VALIDATED_CARDS_LENGTH 3
 #define AVAILABLE_BILLS_LENGTH 6
@@ -21,6 +22,8 @@ class DataManager {
         nlohmann::json currentCardData;
         Card insertedCard;
         Card validCards[VALIDATED_CARDS_LENGTH];
+        std::hash<std::string> encryptor;
+        std::string encryptedCardNumber;
         void setMoneyDetails();
         void updateMoneyDetails(double, std::string);
         std::string getCurrentDateTime(bool) const;
